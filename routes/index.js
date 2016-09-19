@@ -5,7 +5,7 @@ var mongo = require('mongodb').MongoClient;
 var shortid = require('shortid');
 var validUrl = require('valid-url');
 
-var mLab = "mongodb://localhost:27017/url-shortener-microservice";
+var mLab = "mongodb://localhost:27017/url-shortener";
 
 
 
@@ -26,51 +26,68 @@ router.get('/shorten/:url(*)', function (req, res, next) {
     var collection = db.collection('links');
     var params = req.params.url;
 
-    //make if statement to see if already in db
+    var local = req.get("host")
 
     var shortenLink = function (db, callback) {
-      if (validUrl.isUri(params)){
-        var shortened = shortid.generate();
-        var insertObj = { url: params, short: shortened}
+      collection.findOne( {
+        "url" : params
+      }, {
+        short: 1,
+        _id: 0
+      }, function (err, datum){
+        if (datum != null) {
+          console.log("Getting shortened URL from database")
+          res.json({
+            originalURL: params,
+            shortenedURL: local + "/" + datum.short
+          })
+        } else {
+          if (validUrl.isUri(params)){
+            var shortened = shortid.generate()
+            var insertObj = {
+              url: params,
+              short:  shortened
+            }
 
-        collection.count({}, function (err, num){
-          console.log(num)
-        })
+            collection.insert(insertObj);
+            res.json({
+              originalURL: params,
+              shortenedURL: local + '/' + shortened
+            })
 
+          } else {
+            res.json({
+              error: "Invalid URL"
+            })
+          }
+        } //upper else
+      }) // collection
 
-        collection.insert(insertObj)
-        res.json({
-          original: params,
-          shorten: "localhost:3000/" + shortened
-        })
-      } else {
-        res.json({
-          error: "Invalid URL"
-        })
-      }
-    };
+    } // shortenLink
+
     shortenLink(db, function () {
+      console.log("Got shortened url")
       db.close();
     });
 
-  });
-});
+  })//mongo
+}) //router
 
 
-/*
+
 router.get('/:shortenedURL', function (req, res, next){
   mongo.connect(mLab, function (err, db){
     if (err) throw err;
     console.log('Connected, redirecting')
 
     var collection = db.collection('links')
-    var params = req.params.url
+    var params = req.params.shortenedURL
 
     var findShortened = function (db, callback) {
       collection.findOne( {
         "short": params
       }, {
-      ur: 1,
+      url: 1,
       _id: 0
       },
       function (error, data) {
@@ -89,10 +106,9 @@ router.get('/:shortenedURL', function (req, res, next){
       db.close();
     })
 
-
   })
 })
 
-*/
+
 
 module.exports = router;
