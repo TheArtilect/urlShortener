@@ -17,19 +17,27 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/:url(*)', function (req, res, next) {
+// shorten url input
+router.get('/shorten/:url(*)', function (req, res, next) {
   mongo.connect(mLab, function (err, db) {
     if (err) throw err
-    console.log("Connected")
+    console.log("Connected, getting shortened Url")
 
     var collection = db.collection('links');
     var params = req.params.url;
 
-    var newLink = function (db, callback) {
+    //make if statement to see if already in db
 
+    var shortenLink = function (db, callback) {
       if (validUrl.isUri(params)){
         var shortened = shortid.generate();
         var insertObj = { url: params, short: shortened}
+
+        collection.count({}, function (err, num){
+          console.log(num)
+        })
+
+
         collection.insert(insertObj)
         res.json({
           original: params,
@@ -40,26 +48,51 @@ router.get('/:url(*)', function (req, res, next) {
           error: "Invalid URL"
         })
       }
-
-      /*
-      var insertLink = { url: params, short: "short" };
-      collection.insert([insertLink]);
-      */
-
-
     };
-
-    newLink(db, function () {
+    shortenLink(db, function () {
       db.close();
     });
 
-
   });
-
-
 });
 
 
+/*
+router.get('/:shortenedURL', function (req, res, next){
+  mongo.connect(mLab, function (err, db){
+    if (err) throw err;
+    console.log('Connected, redirecting')
 
+    var collection = db.collection('links')
+    var params = req.params.url
+
+    var findShortened = function (db, callback) {
+      collection.findOne( {
+        "short": params
+      }, {
+      ur: 1,
+      _id: 0
+      },
+      function (error, data) {
+        if (error) throw error
+        if (data != null){
+          res.redirect(data.url);
+        } else {
+          res.json({
+            error: "Shortened link not found in database.  Check shortened link."
+          })
+        }
+      }
+    )}
+
+    findShortened (db, function (){
+      db.close();
+    })
+
+
+  })
+})
+
+*/
 
 module.exports = router;
