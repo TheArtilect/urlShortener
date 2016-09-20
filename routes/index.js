@@ -9,16 +9,13 @@ var mLab = "mongodb://localhost:27017/url-shortener";
 
 
 
-
-
-
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Url Shortener', author: "Ian Agpawa" });
 });
 
 // shorten url input
-router.get('/shorten/:url(*)', function (req, res, next) {
+router.get('/short/:url(*)', function (req, res, next) {
   mongo.connect(mLab, function (err, db) {
     if (err) throw err
     console.log("Connected, getting shortened Url")
