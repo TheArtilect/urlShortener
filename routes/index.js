@@ -3,9 +3,10 @@ var router = express.Router();
 
 var mongo = require('mongodb').MongoClient;
 var shortid = require('shortid');
+shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
 var validUrl = require('valid-url');
 
-var mLab = "mongodb://localhost:27017/url-shortener";
+var mLab = "mongodb://daemonea:destroyer33@ds035826.mlab.com:35826/u-short"
 
 
 
@@ -15,7 +16,7 @@ router.get('/', function(req, res) {
 });
 
 // shorten url input
-router.get('/short/:url(*)', function (req, res, next) {
+router.get('/shorten/:url(*)', function (req, res, next) {
   mongo.connect(mLab, function (err, db) {
     if (err) throw err
     console.log("Connected, getting shortened Url")
@@ -23,7 +24,7 @@ router.get('/short/:url(*)', function (req, res, next) {
     var collection = db.collection('links');
     var params = req.params.url;
 
-    var local = req.get("host")
+    var local = req.get('host') + "/";
 
     var shortenLink = function (db, callback) {
       collection.findOne( {
