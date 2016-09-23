@@ -25,7 +25,7 @@ router.get('/shorten/:url(*)', function (req, res, next) {
     var collection = db.collection('links');
     var params = req.params.url;
 
-    var local = req.get('host') + "/";
+    var local = req.get('host');
 
     var shortenLink = function (db, callback) {
       collection.findOne( {
