@@ -38,7 +38,7 @@ router.get('/shorten/:url(*)', function (req, res, next) {
           console.log("Getting shortened URL from database")
           res.json({
             originalURL: params,
-            shortenedURL: local + "/" + datum.short
+            shortenedURL: "https://" + local + "/" + datum.short
           })
         } else {
           if (validUrl.isUri(params)){
@@ -51,7 +51,7 @@ router.get('/shorten/:url(*)', function (req, res, next) {
             collection.insert(insertObj);
             res.json({
               originalURL: params,
-              shortenedURL: local + '/' + shortened
+              shortenedURL: "https://" + local + '/' + shortened
             })
 
           } else {
