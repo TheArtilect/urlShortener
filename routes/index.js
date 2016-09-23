@@ -6,7 +6,8 @@ var shortid = require('shortid');
 shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
 var validUrl = require('valid-url');
 
-var mLab = "mongodb://daemonea:destroyer33@ds035826.mlab.com:35826/u-short"
+var mLab = process.env.MONGOLAB_URI;
+
 
 
 
