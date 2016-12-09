@@ -1,6 +1,4 @@
-# ImageSearch
-
-### By Ian Agpawa
+# URL Shortener
 
 #### This repo is for an API project from freeCodeCamp's Back End Development Certification.
 Users can pass a url as a parameter and receive a JSON output for a shortened url, which redirects to the original website.
